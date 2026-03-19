@@ -1,28 +1,63 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+
 const connectDB = require("./config/db");
 
-dotenv.config();
+const documentRoutes = require("./routes/documentRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const authRoutes = require("./routes/authRoutes");
 
-connectDB();
+const errorHandler = require("./middleware/errorHandler");
+const limiter = require("./middleware/rateLimiter");
+
+const session = require("express-session");
+const passport = require("./config/passport");
 
 const app = express();
 
+
+// 🔹 1. Connect DB FIRST
+connectDB();
+
+
+// 🔹 2. Global Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const testRoutes = require("./routes/test");
-const documentRoutes = require("./routes/documentRoutes");
 
-app.use("/api/test", testRoutes);
+// 🔹 3. Rate Limiter (VERY IMPORTANT — early placement)
+app.use(limiter);
+
+
+// 🔹 4. Session Middleware (must come BEFORE passport)
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+
+// 🔹 5. Passport Init (after session)
+app.use(passport.initialize());
+
+
+// 🔹 6. Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/docs", documentRoutes);
+app.use("/api/chat", chatRoutes);
 
-// Root route
+
+// 🔹 7. Health Check Route
 app.get("/", (req, res) => {
-  res.send("API running...");
+  res.send("API is running...");
 });
+
+
+// 🔹 8. Error Handler (ALWAYS LAST)
+app.use(errorHandler);
+
 
 const PORT = process.env.PORT || 5000;
 
