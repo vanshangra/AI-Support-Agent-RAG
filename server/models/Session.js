@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const sessionScheme = new mongoose.SchemaType({
+const sessionScheme = new mongoose.Schema({
     userId: String,
     userAgent: String,
     ipAddress: String,

@@ -9,6 +9,9 @@ const documentRoutes = require("./routes/documentRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const authRoutes = require("./routes/authRoutes");
 
+const chatHistoryRoutes = require("./routes/chatHistoryRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
 const errorHandler = require("./middleware/errorHandler");
 const limiter = require("./middleware/rateLimiter");
 
@@ -48,6 +51,19 @@ app.use("/api/auth", authRoutes);
 app.use("/api/docs", documentRoutes);
 app.use("/api/chat", chatRoutes);
 
+app.use("/api/history", chatHistoryRoutes);
+app.use("/api/admin", adminRoutes);
+
+app.get(
+  "/api/protected",
+  require("./middleware/authMiddleware").protect,
+  (req, res) => {
+    res.json({
+      message: "Protected route accessed",
+      user: req.user
+    });
+  }
+);
 
 // 🔹 7. Health Check Route
 app.get("/", (req, res) => {

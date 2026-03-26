@@ -1,4 +1,6 @@
 const { queryRAG } = require("../services/chatService");
+const Chatlog = require("../models/ChatLog");
+const {log} = require("../services/loggerService")
 
 const askQuestion = async (req, res, next) => {
 
@@ -13,9 +15,20 @@ const askQuestion = async (req, res, next) => {
 
     const result = await queryRAG(question);
 
+    // Save chat history
+    await Chatlog.create({
+      userId: req.user?.id || "anonymous",
+      question,
+      answer: result.answer,
+      sources: result.sources
+    });
+
+    log(`User asked: ${question}`);
+    
     res.json(result);
 
   } catch (error) {
+    log(`Error: ${error.message}`);
     next(error);
   }
 

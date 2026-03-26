@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 
 const chatLogSchema = new mongoose.Schema({
-    userId: String,
+    userId: {
+        type: String,
+        required: true
+    },
     question: String,
     answer: String,
-    sources: [String],
+    sources: [{
+        document_id: String,
+        chunk_index: Number
+    }],
     createdAt: {
         type: Date,
         default: Date.now

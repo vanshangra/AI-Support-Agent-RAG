@@ -4,7 +4,7 @@ const router = express.Router();
 const upload = require("../middleware/upload");
 const {v4:uuidv4} = require("uuid");
 
-const Document = require("../models/document");
+const Document = require("../models/Document");
 const {sendDocumentForProcessing} = require("../services/ragService");
 
 router.post("/upload", upload.single("file"), async (req, res) => {

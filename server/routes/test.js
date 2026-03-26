@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Document = require("../models/document");
+const Document = require("../models/Document");
 
 router.get("/create", async (req, res) => {
     const doc = new Document({
